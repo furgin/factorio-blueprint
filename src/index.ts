@@ -29,7 +29,7 @@ export default class Blueprint {
   tiles: Tile[];
   entityPositionGrid: { [location: string]: Entity };
   tilePositionGrid: { [location: string]: Tile };
-  version: string;
+  version: number;
   checkWithEntityData: boolean;
 
   constructor(data: any, opt: BlueprintOptions = {}) {
@@ -39,7 +39,7 @@ export default class Blueprint {
     this.tiles = []; // List of all tiles in Blueprint (such as stone path or concrete)
     this.entityPositionGrid = {}; // Object with tile keys in format "x,y" => entity
     this.tilePositionGrid = {};
-    this.version = '0';
+    this.version = 73019621376;
     this.checkWithEntityData =
       opt.checkWithEntityData != undefined ? opt.checkWithEntityData : true; // make sure checkName() validates with entityData
     if (data) this.load(data, opt);
@@ -370,7 +370,7 @@ export default class Blueprint {
     const tileInfo = this.tiles.map((tile, i) => tile.getData());
     const iconData = this.icons.map((icon, i) => {
       return {
-        signal: { type: entityData[icon].type, name: this.fixName(icon) },
+        signal: { type: entityData[icon].type, name: this.iconName(icon) },
         index: i + 1,
       };
     });
@@ -468,6 +468,15 @@ export default class Blueprint {
 
   fixName(name: string) {
     return name.replace(/_/g, '-');
+  }
+
+  iconName(name: string) {
+    switch (name) {
+      case 'straight_rail':
+        return 'rail';
+      default:
+        return this.fixName(name);
+    }
   }
 
   static getBook(str: string, opt: any) {
