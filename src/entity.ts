@@ -39,6 +39,10 @@ interface AlertParameters {
   message?: string;
 }
 
+interface TrainParameters {
+  sendToTrain?: boolean;
+}
+
 export default class Entity {
   id: number;
   bp: Blueprint;
@@ -55,6 +59,7 @@ export default class Entity {
 
   parameters: any;
   alertParameters: AlertParameters;
+  trainParameters: TrainParameters;
 
   filters: { [position: number]: string };
   requestFilters: { [position: number]: Constant };
@@ -657,6 +662,17 @@ export default class Entity {
     return this;
   }
 
+  setTrainParameters(opt: TrainParameters) {
+    if (!this.trainParameters) this.trainParameters = {};
+
+    Object.keys(opt).forEach(
+        // @ts-ignore
+        (key: keyof TrainParameters) => (this.trainParameters[key] = opt[key]),
+    );
+
+    return this;
+  }
+
   setConstant(pos: number, name: string, count: number) {
     if (this.name != 'constant_combinator')
       throw new Error('Can only set constants for constant combinators!');
@@ -892,7 +908,8 @@ export default class Entity {
         this.constants ||
         this.condition ||
         this.name == 'decider_combinator' ||
-        this.name == 'arithmetic_combinator'
+        this.name == 'arithmetic_combinator' ||
+        this.name == 'train-stop'
           ? getOptionData({
               filters:
                 this.constants && Object.keys(this.constants).length
